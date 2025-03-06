@@ -2,6 +2,7 @@ package edu.grinnell.csc207.blockchain;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * A wrapper class over a hash value (a byte array).
@@ -39,10 +40,9 @@ public class Hash {
      * @return
      */
     public boolean isValid() {
+        byte[] hashStore = getDataReplace();
         boolean returnValue = true;
 
-        //get hash data in store. md now empty.
-        byte[] hashStore = md.digest();
 
         for (int i = 0; i < 3; i++) {
             if (hashStore[i] != 0) {
@@ -51,18 +51,32 @@ public class Hash {
             }
         }
 
-        //put hash abck into the array
-        md.update(hashStore);
         return returnValue;
     }
 
-    @Override
-    public String toString() {
+    /**
+     * Helper function to get hash data from object but replaces it after.
+     *
+     * @return
+     */
+    private byte[] getDataReplace() {
         //get hash data in store. md now empty.
         byte[] hashStore = md.digest();
 
-        //put hash back into the array
+        //put hash abck into the array
         md.update(hashStore);
+
+        return hashStore;
+    }
+
+    /**
+     * This returns a string representation of the hash in hexadecimal
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        byte[] hashStore = getDataReplace();
 
         //Credit:https://stackoverflow.com/a/2817883
         StringBuilder sb = new StringBuilder();
@@ -71,5 +85,24 @@ public class Hash {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Returns true if this hash is structurally equal to the argument
+     *
+     * @param other
+     */
+    @Override
+    public boolean equals(Object other) {
+        //cherck if it is a hash object
+        if (!(other instanceof Hash)) {
+            return false;
+        }
+
+        //Cast and validate
+        Hash o = (Hash) other;
+        
+        //concise check and return
+        return Arrays.equals(o.getDataReplace(),getDataReplace());
     }
 }
