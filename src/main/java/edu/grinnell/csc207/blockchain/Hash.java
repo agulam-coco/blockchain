@@ -40,19 +40,36 @@ public class Hash {
      */
     public boolean isValid() {
         boolean returnValue = true;
-        
+
         //get hash data in store. md now empty.
         byte[] hashStore = md.digest();
-        
+
         for (int i = 0; i < 3; i++) {
-            if (hashStore[i] != 0 ) {
+            if (hashStore[i] != 0) {
                 returnValue = false;
                 break;
             }
         }
-        
+
         //put hash abck into the array
         md.update(hashStore);
         return returnValue;
+    }
+
+    @Override
+    public String toString() {
+        //get hash data in store. md now empty.
+        byte[] hashStore = md.digest();
+
+        //put hash back into the array
+        md.update(hashStore);
+
+        //Credit:https://stackoverflow.com/a/2817883
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashStore) {
+            sb.append(String.format("%02x", b));
+        }
+
+        return sb.toString();
     }
 }
