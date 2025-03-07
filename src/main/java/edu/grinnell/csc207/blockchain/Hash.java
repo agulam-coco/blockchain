@@ -77,6 +77,9 @@ public class Hash {
     @Override
     public String toString() {
         byte[] hashStore = getDataReplace();
+        
+        if (hashStore = null)
+            return "null";
 
         //Credit:https://stackoverflow.com/a/2817883
         StringBuilder sb = new StringBuilder();
