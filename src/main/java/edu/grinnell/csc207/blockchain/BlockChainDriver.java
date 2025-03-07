@@ -12,7 +12,6 @@ public class BlockChainDriver {
     /**
      * The main entry point for the program.
      *
-     * @param argc
      * @param args the command-line arguments
      * @throws java.security.NoSuchAlgorithmException
      */
@@ -44,48 +43,41 @@ public class BlockChainDriver {
         Block minedBlock = null;
 
         while (programRunning) {
-            System.out.println(blockChain.toString());
+            
+            System.out.print(blockChain.toString());
             String command = getValidString(scanner, "Command? ");
 
             switch (command) {
-                case "quit":
-                    System.exit(0);
-                    break;
-                case "help":
-                    printHelp();
-                    break;
-                case "mine":
+                case "quit" -> programRunning = false;
+                case "help" -> printHelp();
+                case "mine" -> {
                     int amount = getValidInt(scanner, "Amount transferred? ");
                     minedBlock = blockChain.mine(amount);
                     System.out.println(String.format("amount = %d, nonce = %d\n", amount, minedBlock.getNonce()));
-                    break;
-                case "append":
+                }
+                case "append" -> {
                     if (minedBlock == null) {
-                        System.out.println("No blocks have been mined. Mine one first!");
+                        System.out.println("No blocks have been mined. Mine one first!\n");
                     } else {
                         blockChain.append(minedBlock);
-                        System.out.println(String.format("Amount Transferred? %d \nNonce? %d", minedBlock.getAmount(), minedBlock.getNonce()));
+                        System.out.println(String.format("Amount Transferred? %d \nNonce? %d\n", minedBlock.getAmount(), minedBlock.getNonce()));
                         minedBlock = null;
                     }
-                    break;
-                case "report":
-                    blockChain.printBalances();
-                    break;
+                }
+                case "report" -> blockChain.printBalances();
 
-                case "check":
-                    String output = blockChain.isValidBlockChain() ? "Chain is valid!" : "Chain is not valid";
+                case "check" -> {
+                    String output = blockChain.isValidBlockChain() ? "Chain is valid!\n" : "Chain is not valid\n";
                     System.out.println(output);
-                    break;
+                }
                     
-                case "remove":
-                    blockChain.removeLast();
-                    break;
+                case "remove" -> blockChain.removeLast();
 
-                default:
-                    System.out.println("Invalid command.");
+                default -> System.out.println("Invalid command.\n");
             }
 
         }
+        scanner.close();
 
     }
 

@@ -43,7 +43,6 @@ public class Hash {
         byte[] hashStore = getDataReplace();
         boolean returnValue = true;
 
-
         for (int i = 0; i < 3; i++) {
             if (hashStore[i] != 0) {
                 returnValue = false;
@@ -77,9 +76,6 @@ public class Hash {
     @Override
     public String toString() {
         byte[] hashStore = getDataReplace();
-        
-        if (hashStore = null)
-            return "null";
 
         //Credit:https://stackoverflow.com/a/2817883
         StringBuilder sb = new StringBuilder();
@@ -104,8 +100,8 @@ public class Hash {
 
         //Cast and validate
         Hash o = (Hash) other;
-        
+
         //concise check and return
-        return Arrays.equals(o.getDataReplace(),getDataReplace());
+        return Arrays.equals(o.getDataReplace(), getDataReplace());
     }
 }

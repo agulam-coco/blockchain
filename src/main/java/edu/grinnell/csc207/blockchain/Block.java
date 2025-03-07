@@ -8,11 +8,11 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Block {
 
-    int num;
-    int amount;
-    Hash prevHash;
-    long nonce;
-    Hash blockHash;
+    private int num;
+    private int amount;
+    private Hash prevHash;
+    private long nonce;
+    private Hash blockHash;
 
     /**
      * Instantiates Block
@@ -167,8 +167,7 @@ public class Block {
      */
     @Override
     public String toString() {
-        return String.format("Amount: %d, None: %d, prevHash: %s, hash: %s", getAmount(), getNonce(), getPrevHash().toString(), getHash().toString());
-
+        return String.format("Amount: %d, None: %d, prevHash: %s, hash: %s", getAmount(), getNonce(),getPrevHash() == null? "null": getPrevHash().toString(), getHash().toString());
     }
 
 }

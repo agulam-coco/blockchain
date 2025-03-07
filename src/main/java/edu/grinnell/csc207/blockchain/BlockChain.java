@@ -95,12 +95,16 @@ public class BlockChain {
      * @return
      */
     public boolean isValidBlockChain() {
-        Node curr = first;
-        int balance = 0;
+        //begin chain from swecond node
+        Node curr = first.next;
+        
+        //begin balance from first node
+        int balance = first.data.getAmount();
 
         while (curr != null) {
             //validate hash data
-            if (!curr.data.getHash().isValid() || !curr.data.getPrevHash().isValid()) {
+            if (!curr.data.getHash().isValid()) {
+                System.out.println("NOT VALID!!");
                 return false;
             }
 
@@ -176,7 +180,7 @@ public class BlockChain {
          final StringBuilder sb = new StringBuilder();
         while (curr != null) {       
                    sb.append(String.format("Block: %d (%s)\n",curr.data.getNum(),curr.data.toString()));
-
+                   curr = curr.next;
         }
          return sb.toString();
     }
