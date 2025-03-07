@@ -58,7 +58,7 @@ public class Hash {
      *
      * @return
      */
-    private byte[] getDataReplace() {
+    public byte[] getDataReplace() {
         //get hash data in store. md now empty.
         byte[] hashStore = md.digest();
 
@@ -79,8 +79,9 @@ public class Hash {
 
         //Credit:https://stackoverflow.com/a/2817883
         StringBuilder sb = new StringBuilder();
-        for (byte b : hashStore) {
-            sb.append(String.format("%02x", b));
+
+        for (int i = 0; i < hashStore.length; i++) {
+            sb.append(String.format("%02x", Byte.toUnsignedInt(hashStore[i])));
         }
 
         return sb.toString();

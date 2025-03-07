@@ -82,7 +82,8 @@ public class Block {
      * @return
      */
     private int getBufferSize() {
-        return (getNum() != 0 ? 2 * Integer.BYTES + 2 * Long.BYTES : 2 * Integer.BYTES + Long.BYTES);
+       // return 250;
+       return (getNum() != 0 ? (2 * (Integer.SIZE /8)) + (2 * (Long.SIZE/8)) :(2 * (Integer.SIZE /8)) + (Long.SIZE/8));
     }
 
     /**
@@ -109,6 +110,7 @@ public class Block {
 
         } while (!newHash.isValid());
 
+        
         //perform assignments
         this.nonce = nonce;
         this.blockHash = newHash;
@@ -167,7 +169,9 @@ public class Block {
      */
     @Override
     public String toString() {
-        return String.format("Amount: %d, None: %d, prevHash: %s, hash: %s", getAmount(), getNonce(),getPrevHash() == null? "null": getPrevHash().toString(), getHash().toString());
+        byte[] temp = getHash().getDataReplace();
+        System.out.println(String.format("%d %d %d %d %d %d", temp[0] , temp[1], temp[2] , temp[3] , temp[4] , temp[5]));
+        return String.format("Amount: %d, None: %d, prevHash: %s, hash: %s", getAmount(), getNonce(), getPrevHash() == null? "null": getPrevHash().toString(), getHash().toString());
     }
 
 }
