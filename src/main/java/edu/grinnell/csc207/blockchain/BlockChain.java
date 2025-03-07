@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class BlockChain {
 
-    private Node first;
+    private final Node first;
     private Node last;
     private int size;
 
@@ -49,23 +49,34 @@ public class BlockChain {
         return new Block(getSize(), amount, getHash());
     }
 
+    /**
+     * returns the size of the blockchain.
+     *
+     * @return
+     */
     public int getSize() {
         return this.size;
     }
 
+    /**
+     * returns the hash of the last block in the chain.
+     *
+     * @return
+     */
     public Hash getHash() {
         return last.data.getHash();
     }
 
     /**
-     * adds this block to the list,
-     * throwing an IllegalArgumentException if this block cannot be added to the list 
-     * (because it is invalid wrt the rest of the blocks).
-     * @param blk 
+     * adds this block to the list, throwing an IllegalArgumentException if this
+     * block cannot be added to the list (because it is invalid with the rest of
+     * the blocks).
+     *
+     * @param blk
      */
     public void append(Block blk) {
         //do and ask for forgiveness
-        
+
         Node newLastNode = new Node(blk);
         last.next = newLastNode;
         last = newLastNode;
@@ -74,44 +85,100 @@ public class BlockChain {
             removeLast();
             throw new IllegalArgumentException("Block is not valid");
         }
+        this.size++;
     }
 
     /**
-     * walks the blockchain and ensures that its blocks are consistent and valid.
-     * @return 
+     * walks the blockchain and ensures that its blocks are consistent and
+     * valid.
+     *
+     * @return
      */
     public boolean isValidBlockChain() {
-        //TODO 
-        return false;
-    }
+        Node curr = first;
+        int balance = 0;
 
-    /**
-     * removes the last block from the chain, returning true. 
-     * If the chain only contains a single block, 
-     * then removeLast does nothing and returns false.
-     * @return 
-     */
-    public boolean removeLast() {
-        //TO DO 
+        while (curr != null) {
+            //validate hash data
+            if (!curr.data.getHash().isValid() || !curr.data.getPrevHash().isValid()) {
+                return false;
+            }
+
+            balance += curr.data.getAmount();
+            //validate transaction amount
+            if (balance < 0) {
+                return false;
+
+            }
+        }
         return true;
     }
 
     /**
-     * prints Alice's and Bob's respective balances in the form 
-     * Alice: <amt>, Bob: <amt> on a single line, 
-     * e.g., Alice: 300, Bob: 0.
+     * removes the last block from the chain, returning true. If the chain only
+     * contains a single block, then removeLast does nothing and returns false.
+     *
+     * @return
      */
-    public void printBalances(){
-        //TO DO
+    public boolean removeLast() {
+        if (getSize() == 1) {
+            return false;
+        }
+
+        Node prev = first;
+        Node curr = first.next;
+
+        while (!curr.equals(last)) {
+            prev = curr;
+            curr = curr.next;
+        }
+
+        this.last = prev;
+        prev.next = null;
+
+        return true;
     }
-    
+
     /**
-     * Returns a string representation of the BlockChain which is simply
-     * the string representation of each of its blocks, earliest to latest, one per line.
-     * @return 
+     * prints Alice's and Bob's respective balances in the form Alice: <amt>,
+     * Bob: <amt> on a single line, e.g., Alice: 300, Bob: 0.
+     */
+    public void printBalances() {
+        Node curr = first;
+        int aliceBalance = 0;
+        int bobBalance = 0;
+
+        while (curr != null) {
+            int temp = curr.data.getAmount();
+
+            if (temp >= 0) {
+                aliceBalance += temp;
+            } else {
+                bobBalance -= temp;
+            }
+            curr = curr.next;
+        }
+
+        System.out.println(String.format("Alice: %d, Bob: %d", aliceBalance, bobBalance));
+    }
+
+    /**
+     * Returns a string representation of the BlockChain which is simply the
+     * string representation of each of its blocks, earliest to latest, one per
+     * line.
+     *
+     * @return
      */
     @Override
-    public String toString(){
-        return "TO DO";
+    public String toString() {
+
+        Node curr = first;
+         final StringBuilder sb = new StringBuilder();
+        while (curr != null) {       
+                   sb.append(String.format("Block: %d (%s)\n",curr.data.getNum(),curr.data.toString()));
+
+        }
+         return sb.toString();
     }
+   
 }
