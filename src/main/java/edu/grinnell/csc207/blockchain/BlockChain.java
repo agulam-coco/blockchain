@@ -100,6 +100,8 @@ public class BlockChain {
 
         //begin balance from first node
         int balance = first.data.getAmount();
+        
+        Hash prevHash = first.data.getHash();
 
         while (curr != null) {
             //validate hash data
@@ -109,11 +111,22 @@ public class BlockChain {
 
             balance += curr.data.getAmount();
             System.out.println(balance);
+            
             //validate transaction amount
             if (balance < 0) {
                 return false;
 
             }
+            
+            //validate hash and previous hash
+            if(!curr.data.getPrevHash().equals(prevHash)){
+                return false;
+            }
+            
+            prevHash = curr.data.getHash();
+            curr=curr.next;
+            
+            
         }
         return true;
     }
