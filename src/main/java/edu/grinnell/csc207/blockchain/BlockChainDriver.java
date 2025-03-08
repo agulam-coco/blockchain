@@ -96,12 +96,8 @@ public class BlockChainDriver {
             System.out.print(prompt);
             try {
                 input = scanner.nextInt();
-                if (input >= 0 && input <= 120) { // Example validation: age between 0 and 120
                     scanner.nextLine(); // Consume newline left-over
                     return input;
-                } else {
-                    System.out.println("Invalid input. Please enter a valid age (0-120).");
-                }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter an integer.");
                 scanner.next(); // discard non-integer input

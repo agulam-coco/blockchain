@@ -1,6 +1,8 @@
 package edu.grinnell.csc207.blockchain;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -46,7 +48,8 @@ public class Block {
         this.nonce = nonce;
         this.blockHash = computeHash(num, amount, prevHash, nonce, getBufferSize());
     }
-
+    
+ 
     /**
      * Computes the hash of a block provided the information.
      *
@@ -61,19 +64,30 @@ public class Block {
     private static Hash computeHash(int num, int amount, Hash prevHash, long nonce, int bufferSize) throws NoSuchAlgorithmException {
         //ternary return hash based on if it is first block or not
         //credit: https://stackoverflow.com/a/7693344
+        
+        //fill data into digest
+        MessageDigest md = MessageDigest.getInstance("sha-256");
 
-        return (num != 0
-                ? new Hash(ByteBuffer.allocate(bufferSize)
+
+        if(num != 0){
+            //parse long
+            BigInteger bi = new BigInteger(prevHash.toString(), 16);
+            
+                  md.update(ByteBuffer.allocate(bufferSize)
                         .putInt(num)
                         .putInt(amount)
-                        .putLong(Long.parseLong(prevHash.toString()))
+                        .putLong(bi.longValue())
                         .putLong(nonce)
-                        .array())
-                : new Hash(ByteBuffer.allocate(bufferSize)
+                        .array());
+        }
+        else{  md.update(ByteBuffer.allocate(bufferSize)
                         .putInt(num)
                         .putInt(amount)
                         .putLong(nonce)
-                        .array()));
+                        .array());
+        }
+        
+        return new Hash(md.digest());
     }
 
     /**
@@ -82,7 +96,6 @@ public class Block {
      * @return
      */
     private int getBufferSize() {
-       // return 250;
        return (getNum() != 0 ? (2 * (Integer.SIZE /8)) + (2 * (Long.SIZE/8)) :(2 * (Integer.SIZE /8)) + (Long.SIZE/8));
     }
 
@@ -169,9 +182,9 @@ public class Block {
      */
     @Override
     public String toString() {
-        byte[] temp = getHash().getDataReplace();
-        System.out.println(String.format("%d %d %d %d %d %d", temp[0] , temp[1], temp[2] , temp[3] , temp[4] , temp[5]));
-        return String.format("Amount: %d, None: %d, prevHash: %s, hash: %s", getAmount(), getNonce(), getPrevHash() == null? "null": getPrevHash().toString(), getHash().toString());
+        //byte[] temp = getHash().getDataReplace();
+        //System.out.println(String.format("%d %d %d %d %d %d", temp[0] , temp[1], temp[2] , temp[3] , temp[4] , temp[5]));
+        return String.format("Amount: %d, Nonce: %d, prevHash: %s, hash: %s", getAmount(), getNonce(), getPrevHash() == null? "null": getPrevHash().toString(), getHash().toString());
     }
 
 }

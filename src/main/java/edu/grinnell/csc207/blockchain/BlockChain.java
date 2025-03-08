@@ -35,7 +35,7 @@ public class BlockChain {
         first = new Node(firstBlock);
         last = first;
 
-        size = 0;
+        size = 1;
     }
 
     /**
@@ -77,15 +77,15 @@ public class BlockChain {
     public void append(Block blk) {
         //do and ask for forgiveness
 
-        Node newLastNode = new Node(blk);
-        last.next = newLastNode;
-        last = newLastNode;
-
-        if (!isValidBlockChain()) {
-            removeLast();
+        if (blk.getHash().isValid() && blk.getPrevHash().equals(last.data.getHash())) {
+            Node newLastNode = new Node(blk);
+            last.next = newLastNode;
+            last = newLastNode;
+            this.size++;
+        } else {
             throw new IllegalArgumentException("Block is not valid");
         }
-        this.size++;
+
     }
 
     /**
@@ -97,18 +97,18 @@ public class BlockChain {
     public boolean isValidBlockChain() {
         //begin chain from swecond node
         Node curr = first.next;
-        
+
         //begin balance from first node
         int balance = first.data.getAmount();
 
         while (curr != null) {
             //validate hash data
             if (!curr.data.getHash().isValid()) {
-                System.out.println("NOT VALID!!");
                 return false;
             }
 
             balance += curr.data.getAmount();
+            System.out.println(balance);
             //validate transaction amount
             if (balance < 0) {
                 return false;
@@ -177,12 +177,12 @@ public class BlockChain {
     public String toString() {
 
         Node curr = first;
-         final StringBuilder sb = new StringBuilder();
-        while (curr != null) {       
-                   sb.append(String.format("Block: %d (%s)\n",curr.data.getNum(),curr.data.toString()));
-                   curr = curr.next;
+        final StringBuilder sb = new StringBuilder();
+        while (curr != null) {
+            sb.append(String.format("Block: %d (%s)\n", curr.data.getNum(), curr.data.toString()));
+            curr = curr.next;
         }
-         return sb.toString();
+        return sb.toString();
     }
-   
+
 }

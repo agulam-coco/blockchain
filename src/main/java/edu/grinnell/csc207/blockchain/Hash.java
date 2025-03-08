@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class Hash {
 
-    MessageDigest md;
+    byte[] hashData;
 
     /**
      * Constructor which initializes data into object
@@ -19,9 +19,8 @@ public class Hash {
      */
     public Hash(byte[] data) throws NoSuchAlgorithmException {
 
-        //fill data into digest
-        md = MessageDigest.getInstance("sha-256");
-        md.update(data);
+        hashData = data;
+   
     }
 
     /**
@@ -30,7 +29,7 @@ public class Hash {
      * @return true or false
      */
     public byte[] getData() {
-        return md.digest();
+        return hashData;
     }
 
     /**
@@ -40,7 +39,7 @@ public class Hash {
      * @return
      */
     public boolean isValid() {
-        byte[] hashStore = getDataReplace();
+        byte[] hashStore = getData();
         boolean returnValue = true;
 
         for (int i = 0; i < 3; i++) {
@@ -57,17 +56,7 @@ public class Hash {
      * Helper function to get hash data from object but replaces it after.
      *
      * @return
-     */
-    public byte[] getDataReplace() {
-        //get hash data in store. md now empty.
-        byte[] hashStore = md.digest();
-
-        //put hash abck into the array
-        md.update(hashStore);
-
-        return hashStore;
-    }
-
+//mi
     /**
      * This returns a string representation of the hash in hexadecimal
      *
@@ -75,7 +64,7 @@ public class Hash {
      */
     @Override
     public String toString() {
-        byte[] hashStore = getDataReplace();
+        byte[] hashStore = getData();
 
         //Credit:https://stackoverflow.com/a/2817883
         StringBuilder sb = new StringBuilder();
@@ -103,6 +92,6 @@ public class Hash {
         Hash o = (Hash) other;
 
         //concise check and return
-        return Arrays.equals(o.getDataReplace(), getDataReplace());
+        return Arrays.equals(o.getData(), getData());
     }
 }
