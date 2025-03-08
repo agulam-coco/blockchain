@@ -14,9 +14,9 @@ public class Tests{
 
     @BeforeEach
     void setUp() throws NoSuchAlgorithmException {
-        prevHash = new Hash(new byte[32]); // Placeholder hash for testing
+        prevHash = new Hash(new byte[32]); 
         block1 = new Block(1, 100, prevHash);
-        newPrevHash = new Hash(new byte[32]); // New prev hash for testing
+        newPrevHash = new Hash(new byte[32]); 
         block2 = new Block(2, 200, newPrevHash);
     }
 
@@ -75,7 +75,7 @@ public class Tests{
 
     @Test
     void testEdgeCaseForFirstBlock() throws NoSuchAlgorithmException {
-        Block firstBlock = new Block(0, 0, null); // First block should have no previous hash
+        Block firstBlock = new Block(0, 0, null); 
         assertEquals(0, firstBlock.getNum(), "First block number should be 0.");
         assertEquals(0, firstBlock.getAmount(), "Amount in the first block should be 0.");
         assertNull(firstBlock.getPrevHash(), "First block should have no previous hash.");
@@ -83,9 +83,8 @@ public class Tests{
     
     @Test
     void testInvalidHash() {
-        // Example of a failed test when hash validation fails. You need to modify Hash class as necessary.
         assertThrows(IllegalArgumentException.class, () -> {
-            new Hash(new byte[0]);  // This could be an invalid hash scenario for testing.
+            new Hash(new byte[0]);  
         });
     }
 }
