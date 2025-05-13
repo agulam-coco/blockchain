@@ -4,6 +4,8 @@
 **Email**: [chigabat@grinnell.edu](mailto:chigabat@grinnell.edu)
 
 ---
+##Changes for resubmission
+ - Fixed all style errors and identified and fixed bugs with reporting of values for report function as well as error with validation of if chin isValid
 
 ## Resources
 

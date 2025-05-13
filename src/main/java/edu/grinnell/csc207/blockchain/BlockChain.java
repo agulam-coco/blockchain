@@ -147,8 +147,8 @@ public class BlockChain {
     }
 
     /**
-     * Prints Alice's and Bob's respective balances in the form: Alice: <amt>,
-     * Bob: <amt>
+     * Prints Alice's and Bob's respective balances in the form:
+     * Alice: &lt;amt&gt;, Bob: &lt;amt&gt;
      */
     public void printBalances() {
         Node curr = first;
