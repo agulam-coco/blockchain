@@ -24,60 +24,57 @@ public class BlockChain {
     }
 
     /**
-     * Initialize first block in chain
+     * Initialize first block in chain.
      *
-     * @param initial
-     * @throws NoSuchAlgorithmException
+     * @param initial the initial amount
+     * @throws NoSuchAlgorithmException if SHA-256 is not available
      */
     public BlockChain(int initial) throws NoSuchAlgorithmException {
         Block firstBlock = new Block(0, initial, null);
-
         first = new Node(firstBlock);
         last = first;
-
         size = 1;
     }
 
     /**
      * Mines a new candidate block to be added to the list.
      *
-     * @param amount
-     * @return
-     * @throws java.security.NoSuchAlgorithmException
+     * @param amount the amount to transfer
+     * @return the mined block
+     * @throws NoSuchAlgorithmException if SHA-256 is not available
      */
     public Block mine(int amount) throws NoSuchAlgorithmException {
         return new Block(getSize(), amount, getHash());
     }
 
     /**
-     * returns the size of the blockchain.
+     * Returns the size of the blockchain.
      *
-     * @return
+     * @return number of blocks in the chain
      */
     public int getSize() {
         return this.size;
     }
 
     /**
-     * returns the hash of the last block in the chain.
+     * Returns the hash of the last block in the chain.
      *
-     * @return
+     * @return hash of the last block
      */
     public Hash getHash() {
         return last.data.getHash();
     }
 
     /**
-     * adds this block to the list, throwing an IllegalArgumentException if this
-     * block cannot be added to the list (because it is invalid with the rest of
-     * the blocks).
+     * Adds this block to the list, throwing an IllegalArgumentException if this
+     * block cannot be added (invalid hash or previous hash mismatch).
      *
-     * @param blk
+     * @param blk the block to append
      */
     public void append(Block blk) {
-        //do and ask for forgiveness
+        if (blk.getHash().isValid()
+                && blk.getPrevHash().equals(last.data.getHash())) {
 
-        if (blk.getHash().isValid() && blk.getPrevHash().equals(last.data.getHash())) {
             Node newLastNode = new Node(blk);
             last.next = newLastNode;
             last = newLastNode;
@@ -85,57 +82,50 @@ public class BlockChain {
         } else {
             throw new IllegalArgumentException("Block is not valid");
         }
-
     }
 
     /**
-     * walks the blockchain and ensures that its blocks are consistent and
+     * Walks the blockchain and ensures that its blocks are consistent and
      * valid.
      *
-     * @return
+     * @return true if valid, false otherwise
      */
     public boolean isValidBlockChain() {
-        //begin chain from swecond node
         Node curr = first.next;
-
-        //begin balance from first node
         int balance = first.data.getAmount();
-        
+        int startingbalance = balance;
         Hash prevHash = first.data.getHash();
 
         while (curr != null) {
-            //validate hash data
             if (!curr.data.getHash().isValid()) {
                 return false;
             }
 
             balance += curr.data.getAmount();
-            System.out.println(balance);
-            
-            //validate transaction amount
+
             if (balance < 0) {
                 return false;
-
             }
-            
-            //validate hash and previous hash
-            if(!curr.data.getPrevHash().equals(prevHash)){
+            if (balance > startingbalance) {
                 return false;
             }
-            
+
+            if (!curr.data.getPrevHash().equals(prevHash)) {
+                return false;
+            }
+
             prevHash = curr.data.getHash();
-            curr=curr.next;
-            
-            
+            curr = curr.next;
         }
+
         return true;
     }
 
     /**
-     * removes the last block from the chain, returning true. If the chain only
+     * Removes the last block from the chain, returning true. If the chain only
      * contains a single block, then removeLast does nothing and returns false.
      *
-     * @return
+     * @return true if a block was removed, false otherwise
      */
     public boolean removeLast() {
         if (getSize() == 1) {
@@ -157,45 +147,47 @@ public class BlockChain {
     }
 
     /**
-     * prints Alice's and Bob's respective balances in the form Alice: <amt>,
-     * Bob: <amt> on a single line, e.g., Alice: 300, Bob: 0.
+     * Prints Alice's and Bob's respective balances in the form: Alice: <amt>,
+     * Bob: <amt>
      */
     public void printBalances() {
         Node curr = first;
-        int aliceBalance = 0;
+        int aliceBalance = curr.data.getAmount();
         int bobBalance = 0;
+
+        curr = curr.next;
 
         while (curr != null) {
             int temp = curr.data.getAmount();
-
-            if (temp >= 0) {
-                aliceBalance += temp;
-            } else {
-                bobBalance -= temp;
-            }
+            aliceBalance += temp;
+            bobBalance -= temp;
             curr = curr.next;
         }
 
-        System.out.println(String.format("Alice: %d, Bob: %d", aliceBalance, bobBalance));
+        System.out.println(
+                String.format("Alice: %d, Bob: %d", aliceBalance, bobBalance)
+        );
     }
 
     /**
-     * Returns a string representation of the BlockChain which is simply the
-     * string representation of each of its blocks, earliest to latest, one per
-     * line.
+     * Returns a string representation of the BlockChain.
      *
-     * @return
+     * @return formatted string of each block, one per line
      */
     @Override
     public String toString() {
-
         Node curr = first;
         final StringBuilder sb = new StringBuilder();
         while (curr != null) {
-            sb.append(String.format("Block: %d (%s)\n", curr.data.getNum(), curr.data.toString()));
+            sb.append(
+                    String.format(
+                            "Block: %d (%s)\n",
+                            curr.data.getNum(),
+                            curr.data.toString()
+                    )
+            );
             curr = curr.next;
         }
         return sb.toString();
     }
-
 }

@@ -17,12 +17,12 @@ public class Block {
     private Hash blockHash;
 
     /**
-     * Instantiates Block
+     * Instantiates Block.
      *
-     * @param num
-     * @param amount
-     * @param prevHash
-     * @throws java.security.NoSuchAlgorithmException
+     * @param num       the block number
+     * @param amount    the amount transferred
+     * @param prevHash  the hash of the previous block
+     * @throws java.security.NoSuchAlgorithmException if SHA-256 is not available
      */
     public Block(int num, int amount, Hash prevHash) throws NoSuchAlgorithmException {
         this.num = num;
@@ -32,159 +32,157 @@ public class Block {
     }
 
     /**
-     * Initiates block given nonce
+     * Instantiates Block given a nonce.
      *
-     * @param num
-     * @param amount
-     * @param prevHash
-     * @param nonce
-     * @throws NoSuchAlgorithmException
+     * @param num        the block number
+     * @param amount     the amount transferred
+     * @param prevHash   the hash of the previous block
+     * @param nonce      the nonce to be used
+     * @throws NoSuchAlgorithmException if SHA-256 is not available
      */
-    public Block(int num, int amount, Hash prevHash, long nonce) throws NoSuchAlgorithmException {
+    public Block(int num, int amount, Hash prevHash, long nonce)
+            throws NoSuchAlgorithmException {
 
         this.num = num;
         this.amount = amount;
         this.prevHash = prevHash;
         this.nonce = nonce;
-        this.blockHash = computeHash(num, amount, prevHash, nonce, getBufferSize());
+        this.blockHash =
+            computeHash(num, amount,new BigInteger(prevHash.toString(), 16), nonce, getBufferSize());
     }
-    
- 
+
     /**
      * Computes the hash of a block provided the information.
      *
-     * @param num
-     * @param amount
-     * @param prevHash
-     * @param nonce
-     * @param bufferSize
-     * @return
-     * @throws NoSuchAlgorithmException
+     * @param num         the block number
+     * @param amount      the amount transferred
+     * @param prevHash    the hash of the previous block
+     * @param nonce       the nonce value
+     * @param bufferSize  the buffer size for byte array
+     * @return the hash of the block
+     * @throws NoSuchAlgorithmException if SHA-256 is not available
      */
-    private static Hash computeHash(int num, int amount, Hash prevHash, long nonce, int bufferSize) throws NoSuchAlgorithmException {
-        //ternary return hash based on if it is first block or not
-        //credit: https://stackoverflow.com/a/7693344
-        
-        //fill data into digest
+    private static Hash computeHash(
+        int num, int amount, BigInteger prevLong, long nonce, int bufferSize
+    ) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("sha-256");
 
+        if (num != 0) {
+            md.update(
+                ByteBuffer.allocate(bufferSize)
+                    .putInt(num)
+                    .putInt(amount)
+                    .putLong(prevLong.longValue())
+                    .putLong(nonce)
+                    .array()
+            );
+        } else {
+            md.update(
+                ByteBuffer.allocate(bufferSize)
+                    .putInt(num)
+                    .putInt(amount)
+                    .putLong(nonce)
+                    .array()
+            );
+        }
 
-        if(num != 0){
-            //parse long
-            BigInteger bi = new BigInteger(prevHash.toString(), 16);
-            
-                  md.update(ByteBuffer.allocate(bufferSize)
-                        .putInt(num)
-                        .putInt(amount)
-                        .putLong(bi.longValue())
-                        .putLong(nonce)
-                        .array());
-        }
-        else{  md.update(ByteBuffer.allocate(bufferSize)
-                        .putInt(num)
-                        .putInt(amount)
-                        .putLong(nonce)
-                        .array());
-        }
-        
         return new Hash(md.digest());
     }
 
     /**
-     * Calculates the needed buffer size for byte array based on block number
+     * Calculates the needed buffer size for byte array based on block number.
      *
-     * @return
+     * @return the required buffer size
      */
     private int getBufferSize() {
-       return (getNum() != 0 ? (2 * (Integer.SIZE /8)) + (2 * (Long.SIZE/8)) :(2 * (Integer.SIZE /8)) + (Long.SIZE/8));
+        return (getNum() != 0)
+            ? (2 * (Integer.SIZE / 8)) + (2 * (Long.SIZE / 8))
+            : (2 * (Integer.SIZE / 8)) + (Long.SIZE / 8);
     }
 
     /**
-     * Mines the nonce value and assigns the new nonce value and associated hash
+     * Mines the nonce value and assigns the new nonce value and associated hash.
      *
-     * @throws NoSuchAlgorithmException
+     * @throws NoSuchAlgorithmException if SHA-256 is not available
      */
     private void mineBlock() throws NoSuchAlgorithmException {
-        int bufferSize;
-
-        //credit: https://stackoverflow.com/a/51718622
-        // it is not the first block allocate space for two intergers and two longs else allocate for two integers and one long
-        bufferSize = getBufferSize();
-
-        //noce begins at -1 but increments to 0 due to do while loop
+        int bufferSize = getBufferSize();
         long nonce = -1;
-
-        //temporary hash var for calculation
         Hash newHash;
+
+        BigInteger prevLong = null;
+    if (getNum() != 0 && getPrevHash() != null) {
+        prevLong = new BigInteger(getPrevHash().toString(), 16);
+    }
         do {
             nonce++;
-
-            newHash = computeHash(getNum(), getAmount(), getPrevHash(), nonce, bufferSize);
-
+            newHash = computeHash(
+                getNum(), getAmount(), prevLong, nonce, bufferSize
+            );
         } while (!newHash.isValid());
 
-        
-        //perform assignments
         this.nonce = nonce;
         this.blockHash = newHash;
     }
 
     /**
-     * Returns the number of the block
+     * Returns the number of the block.
      *
-     * @return
+     * @return the block number
      */
     public int getNum() {
         return num;
     }
 
     /**
-     * Returns the amount transferred that is recorded in the current block
+     * Returns the amount transferred that is recorded in the current block.
      *
-     * @return
+     * @return the transferred amount
      */
     public int getAmount() {
         return amount;
     }
 
     /**
-     * Returns the nonce value of the current block
+     * Returns the nonce value of the current block.
      *
-     * @return
+     * @return the nonce value
      */
     public long getNonce() {
         return nonce;
     }
 
     /**
-     * Returns the hash of the previous block
+     * Returns the hash of the previous block.
      *
-     * @return
+     * @return the previous block's hash
      */
     public Hash getPrevHash() {
         return prevHash;
     }
 
     /**
-     * Returns the hash of the current block
+     * Returns the hash of the current block.
      *
-     * @return
+     * @return the current block's hash
      */
     public Hash getHash() {
         return blockHash;
     }
 
     /**
-     * Returns a string representation of the block of the form: Block <num>
-     * (Amount: <amt>, Nonce: <nonce>, prevHash: <prevHash>, hash: <hash>)
+     * Returns a string representation of the block.
      *
-     * @return
+     * @return formatted string with block data
      */
     @Override
     public String toString() {
-        //byte[] temp = getHash().getDataReplace();
-        //System.out.println(String.format("%d %d %d %d %d %d", temp[0] , temp[1], temp[2] , temp[3] , temp[4] , temp[5]));
-        return String.format("Amount: %d, Nonce: %d, prevHash: %s, hash: %s", getAmount(), getNonce(), getPrevHash() == null? "null": getPrevHash().toString(), getHash().toString());
+        return String.format(
+            "Amount: %d, Nonce: %d, prevHash: %s, hash: %s",
+            getAmount(),
+            getNonce(),
+            getPrevHash() == null ? "null" : getPrevHash().toString(),
+            getHash().toString()
+        );
     }
-
 }

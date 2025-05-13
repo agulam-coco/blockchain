@@ -1,6 +1,5 @@
 package edu.grinnell.csc207.blockchain;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
@@ -12,86 +11,71 @@ public class Hash {
     byte[] hashData;
 
     /**
-     * Constructor which initializes data into object
+     * Constructor which initializes data into object.
      *
-     * @param data
-     * @throws NoSuchAlgorithmException
+     * @param data the byte array representing the hash
+     * @throws NoSuchAlgorithmException if SHA-256 is not available
      */
     public Hash(byte[] data) throws NoSuchAlgorithmException {
-
         hashData = data;
-   
     }
 
     /**
-     * Method returns the hash contained in the object as an array of bytes
+     * Returns the hash contained in the object as an array of bytes.
      *
-     * @return true or false
+     * @return the raw byte array of the hash
      */
     public byte[] getData() {
         return hashData;
     }
 
     /**
-     * Method return true if hash meets criteria for validity: HAsh starts with
-     * three zeroes
+     * Returns true if the hash is valid. A hash is valid if its first three
+     * bytes are all zero.
      *
-     * @return
+     * @return true if hash is valid, false otherwise
      */
     public boolean isValid() {
         byte[] hashStore = getData();
-        boolean returnValue = true;
-
         for (int i = 0; i < 3; i++) {
             if (hashStore[i] != 0) {
-                returnValue = false;
-                break;
+                return false;
             }
         }
-
-        return returnValue;
+        return true;
     }
 
     /**
-     * Helper function to get hash data from object but replaces it after.
+     * Returns a string representation of the hash in hexadecimal.
      *
-     * @return
-//mi
-    /**
-     * This returns a string representation of the hash in hexadecimal
-     *
-     * @return
+     * @return a hex string representation of the hash
      */
     @Override
     public String toString() {
         byte[] hashStore = getData();
 
-        //Credit:https://stackoverflow.com/a/2817883
+        // Credit: https://stackoverflow.com/a/2817883
         StringBuilder sb = new StringBuilder();
-
         for (int i = 0; i < hashStore.length; i++) {
-            sb.append(String.format("%02x", Byte.toUnsignedInt(hashStore[i])));
+            sb.append(String.format("%x", Byte.toUnsignedInt(hashStore[i])));
         }
 
         return sb.toString();
     }
 
     /**
-     * Returns true if this hash is structurally equal to the argument
+     * Returns true if this hash is structurally equal to the argument.
      *
-     * @param other
+     * @param other the object to compare against
+     * @return true if the hashes are equal, false otherwise
      */
     @Override
     public boolean equals(Object other) {
-        //cherck if it is a hash object
         if (!(other instanceof Hash)) {
             return false;
         }
 
-        //Cast and validate
         Hash o = (Hash) other;
-
-        //concise check and return
         return Arrays.equals(o.getData(), getData());
     }
 }
