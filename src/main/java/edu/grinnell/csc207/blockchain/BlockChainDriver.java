@@ -93,8 +93,10 @@ public class BlockChainDriver {
                     System.out.println(output);
                 }
 
-                case "remove" ->
+                case "remove" -> {
                     blockChain.removeLast();
+                    System.out.println();
+                }
 
                 default ->
                     System.out.println("Invalid command.\n");

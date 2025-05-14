@@ -165,7 +165,7 @@ public class BlockChain {
         }
 
         System.out.println(
-                String.format("Alice: %d, Bob: %d", aliceBalance, bobBalance)
+                String.format("Alice: %d, Bob: %d\n", aliceBalance, bobBalance)
         );
     }
 
