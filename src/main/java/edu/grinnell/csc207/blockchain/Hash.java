@@ -37,6 +37,11 @@ public class Hash {
      */
     public boolean isValid() {
         byte[] hashStore = getData();
+
+        //length is not at least 3
+        if (hashStore.length < 3) {
+            return false;
+        }
         for (int i = 0; i < 3; i++) {
             if (hashStore[i] != 0) {
                 return false;
