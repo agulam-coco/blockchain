@@ -29,6 +29,11 @@ public class Block {
         this.num = num;
         this.amount = amount;
         this.prevHash = prevHash;
+
+        if (num != 0 && !prevHash.isValid()) {
+            throw new IllegalArgumentException();
+        }
+
         mineBlock();
     }
 
